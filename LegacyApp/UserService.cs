@@ -16,13 +16,8 @@ namespace LegacyApp
                 return false;
             }
 
-            var now = DateTime.Now;
-            int age = now.Year - dateOfBirth.Year;
-
-            if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day))
-            {
-                age--;
-            }
+            IAgeCalculator ageCalculator = new AgeCalculator();
+            int age = ageCalculator.CalculateAge(dateOfBirth);
 
             if (age < 21)
             {
@@ -72,7 +67,7 @@ namespace LegacyApp
             {
                 return false;
             }
-            
+
             UserDataAccess.AddUser(user);
 
             return true;
