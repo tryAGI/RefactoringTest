@@ -6,12 +6,8 @@ namespace LegacyApp
     {
         public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientId)
         {
-            if (string.IsNullOrEmpty(firname) || string.IsNullOrEmpty(surname))
-            {
-                return false;
-            }
-
-            if (!email.Contains("@") || !email.Contains("."))
+            IUserValidator userValidator = new UserValidator();
+            if (!userValidator.IsValidUser(firname, surname, email, dateOfBirth))
             {
                 return false;
             }
