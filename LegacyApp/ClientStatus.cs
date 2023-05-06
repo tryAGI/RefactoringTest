@@ -1,4 +1,4 @@
-﻿namespace LegacyApp
+namespace LegacyApp
 {
     public enum ClientStatus
     {

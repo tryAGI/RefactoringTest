@@ -1,10 +1,10 @@
-﻿using System.Configuration;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace LegacyApp
 {
-    public class ClientRepository
+    public class ClientRepository : IClientRepository
     {
         public Client GetById(int id)
         {
@@ -22,7 +22,7 @@ namespace LegacyApp
 
                 var parametr = new SqlParameter("@clientId", SqlDbType.Int) { Value = id };
                 command.Parameters.Add(parametr);
-                
+
                 connection.Open();
                 var reader = command.ExecuteReader(CommandBehavior.CloseConnection);
                 while (reader.Read())
