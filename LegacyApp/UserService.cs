@@ -36,32 +36,9 @@ namespace LegacyApp
                 Surname = surname
             };
 
-            if (client.Name == "VeryImportantClient")
-            {
-                // Skip credit chek
-                user.HasCreditLimit = false;
-            }
-            else if (client.Name == "ImportantClient")
-            {
-                // Do credit check and double credit limit
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
-                }
-            }
-            else
-            {
-                // Do credit check
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
-                }
-            }
+            ICreditLimitCalculator creditLimitCalculator = new CreditLimitCalculator();
+            user.HasCreditLimit = creditLimitCalculator.HasCreditLimit(client);
+            user.CreditLimit = creditLimitCalculator.CalculateCreditLimit(user, client);
 
             if (user.HasCreditLimit && user.CreditLimit < 500)
             {
