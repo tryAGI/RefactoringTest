@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.ServiceModel;
@@ -41,6 +41,21 @@ namespace LegacyApp
         public int GetCreditLimit(string firstname, string surname, DateTime dateOfBirth)
         {
             return base.Channel.GetCreditLimit(firstname, surname, dateOfBirth);
+        }
+    }
+
+    public class UserCreditServiceWrapper : IUserCreditServiceWrapper
+    {
+        private UserCreditServiceClient _userCreditServiceClient;
+
+        public UserCreditServiceWrapper(UserCreditServiceClient userCreditServiceClient)
+        {
+            _userCreditServiceClient = userCreditServiceClient;
+        }
+
+        public int GetCreditLimit(string firstname, string surname, DateTime dateOfBirth)
+        {
+            return _userCreditServiceClient.GetCreditLimit(firstname, surname, dateOfBirth);
         }
     }
 }
