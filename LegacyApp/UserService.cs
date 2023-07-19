@@ -1,9 +1,20 @@
-﻿using System;
+using System;
 
 namespace LegacyApp
 {
     public class UserService
     {
+        private IClientRepository _clientRepository;
+        private IUserCreditServiceWrapper _userCreditServiceWrapper;
+        private IUserDataAccess _userDataAccess;
+
+        public UserService(IClientRepository clientRepository, IUserCreditServiceWrapper userCreditServiceWrapper, IUserDataAccess userDataAccess)
+        {
+            _clientRepository = clientRepository;
+            _userCreditServiceWrapper = userCreditServiceWrapper;
+            _userDataAccess = userDataAccess;
+        }
+
         public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientId)
         {
             if (string.IsNullOrEmpty(firname) || string.IsNullOrEmpty(surname))
@@ -16,22 +27,43 @@ namespace LegacyApp
                 return false;
             }
 
-            var now = DateTime.Now;
-            int age = now.Year - dateOfBirth.Year;
+            var client = _clientRepository.GetById(clientId);
 
-            if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day))
+            var user = CreateUser(firname, surname, email, dateOfBirth, client);
+
+            if (client.Name == "VeryImportantClient")
             {
-                age--;
+                // Skip credit check
+                user.HasCreditLimit = false;
+            }
+            else if (client.Name == "ImportantClient")
+            {
+                // Do credit check and double credit limit
+                user.HasCreditLimit = true;
+                var creditLimit = _userCreditServiceWrapper.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
+                creditLimit = creditLimit * 2;
+                user.CreditLimit = creditLimit;
+            }
+            else
+            {
+                // Do credit check
+                user.HasCreditLimit = true;
+                var creditLimit = _userCreditServiceWrapper.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
+                user.CreditLimit = creditLimit;
             }
 
-            if (age < 21)
+            if (user.HasCreditLimit && user.CreditLimit < 500)
             {
                 return false;
             }
 
-            var clientRepository = new ClientRepository();
-            var client = clientRepository.GetById(clientId);
+            _userDataAccess.AddUser(user);
 
+            return true;
+        }
+
+        private User CreateUser(string firname, string surname, string email, DateTime dateOfBirth, Client client)
+        {
             var user = new User
             {
                 Client = client,
@@ -41,41 +73,7 @@ namespace LegacyApp
                 Surname = surname
             };
 
-            if (client.Name == "VeryImportantClient")
-            {
-                // Skip credit chek
-                user.HasCreditLimit = false;
-            }
-            else if (client.Name == "ImportantClient")
-            {
-                // Do credit check and double credit limit
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
-                }
-            }
-            else
-            {
-                // Do credit check
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
-                }
-            }
-
-            if (user.HasCreditLimit && user.CreditLimit < 500)
-            {
-                return false;
-            }
-            
-            UserDataAccess.AddUser(user);
-
-            return true;
+            return user;
         }
     }
 }
