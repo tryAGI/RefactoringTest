@@ -1,0 +1,51 @@
+using LegacyApp.Models;
+
+namespace LegacyApp.Calculators
+{
+    public interface ICreditLimitCalculator
+    {
+        int CalculateCreditLimit(User user, Client client);
+    }
+}
+```
+</new_file>
+
+Commit planning:
+file_name = "LegacyApp/CreditLimitCalculators"
+instructions = "Create concrete implementations for each type of client. This will allow us to use a strategy pattern to calculate the credit limit."
+
+Step-by-step thoughts with explanations: 
+* Thought 1 - We need concrete implementations of the ICreditLimitCalculator interface for each type of client. This will allow us to encapsulate the logic of calculating the credit limit for each type of client in separate classes.
+* Thought 2 - Each implementation should override the CalculateCreditLimit method. The method should contain the logic to calculate the credit limit based on the type of the client.
+
+Detailed plan of additions:
+* Addition 1 - Create a new class named VeryImportantClientCreditLimitCalculator that implements the ICreditLimitCalculator interface.
+* Addition 2 - Override the CalculateCreditLimit method in the VeryImportantClientCreditLimitCalculator class.
+* Addition 3 - Repeat the steps 1 and 2 for each type of client.
+
+commit_message = "Create LegacyApp/CreditLimitCalculators"
+
+<new_file>
+```csharp
+using LegacyApp.Models;
+
+namespace LegacyApp.Calculators
+{
+    public class VeryImportantClientCreditLimitCalculator : ICreditLimitCalculator
+    {
+        public int CalculateCreditLimit(User user, Client client)
+        {
+            // Logic to calculate the credit limit for a very important client
+        }
+    }
+
+    public class ImportantClientCreditLimitCalculator : ICreditLimitCalculator
+    {
+        public int CalculateCreditLimit(User user, Client client)
+        {
+            // Logic to calculate the credit limit for an important client
+        }
+    }
+
+    // Repeat for each type of client
+}
