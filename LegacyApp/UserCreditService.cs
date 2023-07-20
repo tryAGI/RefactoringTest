@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.ServiceModel;
@@ -18,22 +18,22 @@ namespace LegacyApp
     public interface IUserCreditServiceChannel : IUserCreditService, IClientChannel
     {
     }
-    
+
     [DebuggerStepThrough]
     [GeneratedCode("System.ServiceModel", "4.0.0.0")]
     public partial class UserCreditServiceClient : ClientBase<IUserCreditService>, IUserCreditService
     {
-        private IUserCreditServiceChannel _userCreditServiceChannelImplementation;
+
         public UserCreditServiceClient() {}
-        
+
         public UserCreditServiceClient(string endpointConfigurationName) : 
             base(endpointConfigurationName)
         {}
-        
+
         public UserCreditServiceClient(string endpointConfigurationName, EndpointAddress remoteAddress) : 
             base(endpointConfigurationName, remoteAddress)
         {}
-        
+
         public UserCreditServiceClient(Binding binding, EndpointAddress remoteAddress) : 
             base(binding, remoteAddress)
         {}
